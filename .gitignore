@@ -1,6 +1,5 @@
 a.o
 main.o
 a.out
-src/a.o
-src/main.o
-src/a.out
+kernel
+src/*.o

@@ -6,4 +6,4 @@ _start:
 
 .section .rodata
 .globl hiasm
-	hiasm: .string "HELLO WORLD FROM ASM\n"
+	hiasm: .string "Booted to c\n"

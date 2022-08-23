@@ -38,3 +38,7 @@ Questions: Does the 3-instruction fail go for assembly as well as c?
 		   Can QEMU introspect about the state of the CPU to verify GDB's claims? Yes, GDB is accurate to QEMU
 		   Extended target vs regular target?
 		   There is a fault on entry because the stack was not set up properly. How do I set up the stack properly, and how do I setup a trap handler to find this fault
+
+https://devicetree-specification.readthedocs.io/en/latest/chapter5-flattened-format.html
+
+This struct is at addr in $a1 upon start

@@ -1,0 +1,40 @@
+https://static.dev.sifive.com/SiFive-E51-Manual-v2p0.pdf
+
+Board: SiFive E51
+
+Where is the UART?
+
+Qemu gives us:
+ * 0) UART
+ * 1) CLINT (Core Level Interruptor)
+ * 2) PLIC (Platform Level Interrupt Controller)
+ * 3) PRCI (Power, Reset, Clock, Interrupt)
+ * 4) Registers emulated as RAM: AON, GPIO, QSPI, PWM
+ * 5) Flash memory emulated as RAM
+ source: https://github.com/qemu/qemu/blob/master/hw/riscv/sifive_e.c
+
+uart0 = 0x10013000
+uart1 = 0x10023000
+dtim = exectuion starts at 0x80000000?
+
+
+unprivilidged: https://riscv.org/wp-content/uploads/2019/12/riscv-spec-20191213.pdf
+privilidged: 
+
+a.s is ultimately incorrect: It has a non-nuanced view of how uart works
+
+The virt board should use a NS16550-compatible serial device, assuming E51 is the same, might try virt then e51
+This is how opensbi handles it:
+https://github.com/riscv-software-src/opensbi/blob/b9edf49b67a1b5e47b1c35dcd7c75efccaf22ea3/lib/utils/serial/sifive-uart.c
+
+The UART has 7 32-bit registers
+
+I guess I'm failing because this is in assembly, not C. Rewrite in C, then come back + try again
+openSBI linker script: https://github.com/riscv-software-src/opensbi/blob/bd355213bfbb209c047e8cc0df56936f6705477f/firmware/payloads/test.elf.ldS
+
+Scrap UART now, focus on running + debugging. Continue until a valid C setup exists
+
+Questions: Does the 3-instruction fail go for assembly as well as c?
+		   Can QEMU introspect about the state of the CPU to verify GDB's claims? Yes, GDB is accurate to QEMU
+		   Extended target vs regular target?
+		   There is a fault on entry because the stack was not set up properly. How do I set up the stack properly, and how do I setup a trap handler to find this fault

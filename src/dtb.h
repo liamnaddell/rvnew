@@ -16,5 +16,6 @@ typedef struct fdt_header {
     uint32_t size_dt_struct;
 } fdt_header;
 
-fdt_header get_header(void *loc);
-void print_header(fdt_header hdr);
+fdt_header *get_header(void *loc);
+void print_header(fdt_header *hdr);
+void print_structure(fdt_header *hdr);

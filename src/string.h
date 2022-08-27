@@ -5,5 +5,6 @@ int putchar(char c);
 char getch();
 void getn(char *buf, int n);
 int puts(const char *buf);
+int puts_nonl(const char *buf);
 int printf(const char *fmt, ...);
 

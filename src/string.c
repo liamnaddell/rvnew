@@ -3,15 +3,10 @@ int strnlen(char *s, int maxsize) {
 	while (!(s[i] == '\0' || i == maxsize)) {
 		i++;
 	}
-	return i;
+	return i - 1;
 }
 int putchar(char c) {
 		char *addr = (char *) 0x10000000;
-		if (c == '\r') {
-			*addr = '\r';
-			*addr = '\n';
-			return 0;
-		}
 		*addr = c;
 		return 0;
 }
@@ -22,6 +17,9 @@ char getch() {
 			if ((addr[5] & 1) != 0) {
 				char c = *addr;
 				//echo character
+				if (c == '\r') {
+					c = '\n';
+				}
 				putchar(c);
 				return c;
 			}
@@ -31,7 +29,7 @@ char getch() {
 void getn(char *buf, int n) {
 	char ch = '\0';
 	int i = 0;
-	while (ch != '\r' && i+1 < n) {
+	while (ch != '\n' && i+1 < n) {
 		ch = getch();
 		buf[i] = ch;
 		i++;
@@ -39,9 +37,16 @@ void getn(char *buf, int n) {
 	buf[i] = '\0';
 }
 
-int puts(char *buf) {
-	for (int i = 0;buf[i] != '\0';i++) {
+int puts_nonl(char *buf) {
+	int i;
+	for (i = 0;buf[i] != '\0';i++) {
 		putchar(buf[i]);
 	}
+	return 0;
+}
+
+int puts(char *buf) {
+	int rval = puts_nonl(buf);
+	putchar('\n');
 	return 0;
 }

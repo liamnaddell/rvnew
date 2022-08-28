@@ -16,6 +16,7 @@ qemu: all
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel -s -S
 
 qemu2: all
+	clear
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel
 
 gdb: all

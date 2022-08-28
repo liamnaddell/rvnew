@@ -3,7 +3,7 @@ int strnlen(char *s, int maxsize) {
 	while (!(s[i] == '\0' || i == maxsize)) {
 		i++;
 	}
-	return i - 1;
+	return i;
 }
 int putchar(char c) {
 		char *addr = (char *) 0x10000000;

@@ -4,7 +4,6 @@ extern char hiasm;
 #include "dtb.h"
 
 void kmain(void *a, void *dtb) {
-	char buf[50];
 	puts(&hiasm);
 	char *str = "booting rvnew";
 	puts(str);
@@ -14,7 +13,9 @@ void kmain(void *a, void *dtb) {
 	print_header(hdr);
 	print_structure(hdr);
 	
+	char buf[50];
 	for (;;) {
 		getn(buf,50);
+		printf(buf);
 	}
 }

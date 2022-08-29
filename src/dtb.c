@@ -104,7 +104,6 @@ uint32_t print_structure(fdt_header *h) {
 			char *s = get_string(h,nameoff);
 			printf("%s: ",s);
 			_struct = print_string_len(_struct,len);
-
 		} else {
 			print_tabs(tabc);
 			puts("PARSE ERROR");
@@ -119,4 +118,74 @@ uint32_t print_structure(fdt_header *h) {
 		tabc--;
 	}*/
 	return;
+}
+
+nodes get_nodes(fdt_header *hdr) {
+	uint32_t *_struct = (uint32_t *) hdr + betole(hdr->off_dt_struct);
+	nodes ns;
+	ns.offset = _struct;
+	ns.level = 0;
+	return ns;
+}
+
+node next_node(fdt_header *hdr, nodes *ns) {
+	uint32_t data = betole(*ns->offset);
+	if (data == 0x4) {
+		ns->offset++;
+		return next_node(hdr,ns);
+	} else if (data == 0x1 || data == 0x6) {
+		ns->level++;
+		ns->offset++;
+		node n;
+		n.offset = ns->level - 1;
+		return n;
+	} else if (data == 0x2) {
+		ns->level--;
+		ns->offset++;
+		return next_node(hdr,ns);
+	} else if (data == 0x3) {
+		ns->offset++;
+		uint32_t len  = betole(*ns->offset);
+		ns->offset++;
+		uint32_t nameoff = betole(*ns->offset);
+		ns->offset++;
+		ns->offset+=len;
+		return next_node(hdr,ns);
+	} else if (data == 0x9) {
+		node n;
+		n.offset = NULL;
+		return n;
+	} else {
+		puts("PARSE ERROR");
+		node n;
+		n.offset = NULL;
+		return n;
+	}
+}
+
+node get_path(fdt_header *hdr, char *s) {
+	nodes ns = get_nodes(hdr);
+	node n = next_node(hdr,&ns);
+	while (n.offset != NULL) {
+		n = next_node(hdr,&ns);
+		if (streq(node_name(n),s)) {
+			return n;
+		}
+	}
+	n.offset = NULL;
+	return n;
+}
+
+char *node_name(node n) {
+	return NULL;
+}
+
+properties get_props(fdt_header *hdr, node n) {
+	properties ps;
+	return ps;
+}
+
+property next_prop(fdt_header *hdr, properties *ps) {
+	property p;
+	return p;
 }

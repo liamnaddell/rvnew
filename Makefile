@@ -7,7 +7,8 @@ all:
 	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/string.c -o src/string.o
 	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/dtb.c -o src/dtb.o
 	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/byte.c -o src/byte.o
-	$(TARGET)-ld src/a.o src/main.o src/printf.o src/string.o src/dtb.o src/byte.o -T src/myscript.ld -o kernel
+	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/malloc.c -o src/malloc.o
+	$(TARGET)-ld src/a.o src/main.o src/printf.o src/string.o src/dtb.o src/byte.o src/malloc.o -T src/myscript.ld -o kernel
 
 objdump:
 	$(TARGET)-objdump -D kernel

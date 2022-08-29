@@ -5,6 +5,15 @@ int strnlen(char *s, int maxsize) {
 	}
 	return i;
 }
+
+int strlen(char *s) {
+	int i=0;
+	while (!(s[i] == '\0')) {
+		i++;
+	}
+	return i;
+}
+
 int putchar(char c) {
 		char *addr = (char *) 0x10000000;
 		*addr = c;
@@ -49,4 +58,25 @@ int puts(char *buf) {
 	int rval = puts_nonl(buf);
 	putchar('\n');
 	return 0;
+}
+
+int streq(const char *s1, const char *s2) {
+	int i = 0;
+	int len1 = strlen(s1);
+	int len2 = strlen(s2);
+	if (len1 != len2) {
+		return 0;
+	}
+
+	while (*s1 != '\0') {
+		if (*s1 != *s2) {
+			return 0;
+		}
+		s1++;
+		s2++;
+	}
+	return 1;
+}
+int strcmp(const char *s1, const char *s2) {
+	return streq(s1,s2);
 }

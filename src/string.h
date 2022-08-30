@@ -10,3 +10,5 @@ int printf(const char *fmt, ...);
 int strlen(char *s);
 int streq(const char *s1, const char *s2);
 int strcmp(const char *s1, const char *s2);
+
+void *memcpy(void *dest, void *src, unsigned int n);

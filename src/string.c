@@ -80,3 +80,14 @@ int streq(const char *s1, const char *s2) {
 int strcmp(const char *s1, const char *s2) {
 	return streq(s1,s2);
 }
+
+
+//redo in assembly
+void *memcpy(char *dest, char *src, long unsigned int n) {
+	for (int i = 0; i < n; i++) {
+		*dest=*src;
+		dest++;
+		src++;
+	}
+	return dest;
+}

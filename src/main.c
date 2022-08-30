@@ -34,6 +34,24 @@ uint64_t get_hartid() {
 	return mhartid;
 }
 
+uint64_t get_mtvec() {
+	uint64_t mtvec;
+	asm volatile("csrrs %0, mtvec, x0" : "=r"(mtvec) : :);
+	return mtvec;
+}
+
+void set_mtvec(void *addr) {
+	//why 4, do research maybe, riscv priviledged says 4 byte boundry, but 2 workd
+	uint64_t mtvec = (((uint64_t) addr) << 0) & ~(0b11) ;
+	asm volatile("csrrw %0, mtvec, %0" : : "r"(mtvec):);
+	return;
+}
+
+void interrupt_handler() {
+	puts("exception handled");
+	while (1) {}
+}
+
 
 void kmain(void *a, void *dtb) {
 
@@ -48,6 +66,12 @@ void kmain(void *a, void *dtb) {
 
 	spec s = get_extensions();
 	printf("%s\n",s);
+
+	
+	set_mtvec(interrupt_handler);
+	printf("mtvec: %x",get_mtvec() >> 2);
+
+	asm volatile("lw t0, 0(x0)" : : :);
 
 	/*
 	fdt_header *hdr = get_header(dtb);

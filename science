@@ -18,7 +18,9 @@ uart1 = 0x10023000
 dtim = exectuion starts at 0x80000000?
 
 
+reference card: https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf
 unprivilidged: https://riscv.org/wp-content/uploads/2019/12/riscv-spec-20191213.pdf
+
 privilidged: 
 
 a.s is ultimately incorrect: It has a non-nuanced view of how uart works

@@ -28,9 +28,20 @@ spec get_extensions() {
 	s.extensions[i] = 0;
 	return s;
 }
+uint64_t get_hartid() {
+	uint64_t mhartid;
+	asm volatile("csrrs %0, mhartid, x0" : "=r"(mhartid) : :);
+	return mhartid;
+}
 
 
 void kmain(void *a, void *dtb) {
+
+	int hartid = get_hartid();
+	if (hartid != 0) {
+		while (1) {}
+	}
+
 	puts(&hiasm);
 	char *str = "booting rvnew";
 	puts(str);

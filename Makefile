@@ -27,9 +27,9 @@ qemu: kernel
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel -s -S
 
 qemu2: kernel
-	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel -smp 2
+	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel #-smp 2
 
-gdb: all
+gdb: kernel
 	$(TARGET)-gdb -x gdb.gdb kernel
 
 clean:

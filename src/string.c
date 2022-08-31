@@ -78,7 +78,14 @@ int streq(char *s1, char *s2) {
 	return 1;
 }
 int strcmp(char *s1, char *s2) {
-	return streq(s1,s2);
+	while (*s1 == *s2) {
+		if (*s1 == '\0') {
+			return *s1 - *s2;
+		}
+		s1++;
+		s2++;
+	}
+	return *s1 - *s2;
 }
 
 

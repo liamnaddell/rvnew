@@ -60,7 +60,7 @@ int puts(char *buf) {
 	return 0;
 }
 
-int streq(const char *s1, const char *s2) {
+int streq(char *s1, char *s2) {
 	int i = 0;
 	int len1 = strlen(s1);
 	int len2 = strlen(s2);
@@ -77,7 +77,7 @@ int streq(const char *s1, const char *s2) {
 	}
 	return 1;
 }
-int strcmp(const char *s1, const char *s2) {
+int strcmp(char *s1, char *s2) {
 	return streq(s1,s2);
 }
 

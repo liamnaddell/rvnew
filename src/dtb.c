@@ -56,7 +56,7 @@ uint32_t *print_string_len(uint32_t *_struct, uint32_t len) {
 	return _struct;
 }
 
-uint32_t print_structure(fdt_header *h) {
+void print_structure(fdt_header *h) {
 	uint32_t *_struct = (uint32_t *) h + betole(h->off_dt_struct);
 	uint32_t data = betole(*_struct);
 	//skip 6 at beginning lol?
@@ -137,7 +137,7 @@ node next_node(fdt_header *hdr, nodes *ns) {
 		ns->level++;
 		ns->offset++;
 		node n;
-		n.offset = ns->level - 1;
+		n.offset = ns->offset - 1;
 		return n;
 	} else if (data == 0x2) {
 		ns->level--;

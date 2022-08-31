@@ -1,23 +1,32 @@
-TARGET=riscv64-elf
+TARGET := riscv64-elf
+CFLAGS := -Wno-builtin-declaration-mismatch -Wno-discarded-qualifiers -mcmodel=medany -ggdb -march='rv64gc' -nostdlib
 
-all:
-	$(TARGET)-gcc src/a.s -c -nostdlib -o src/a.o
-	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/main.c -o src/main.o
-	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/printf.c -o src/printf.o
-	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/string.c -o src/string.o
-	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/dtb.c -o src/dtb.o
-	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/byte.c -o src/byte.o
-	$(TARGET)-gcc -mcmodel=medany -ggdb -c -march='rv64gc' -nostdlib src/malloc.c -o src/malloc.o
-	$(TARGET)-ld src/a.o src/main.o src/printf.o src/string.o src/dtb.o src/byte.o src/malloc.o -T src/myscript.ld -o kernel
+OBJDIR := src
+
+CC := riscv64-elf-gcc
+
+OBJS := $(addprefix $(OBJDIR)/, a.o string.o dtb.o byte.o malloc.o printf.o)
+
+all:  $(OBJS) $(OBJDIR)/main.o
+	"$(TARGET)-ld" $^ -T src/myscript.ld -o kernel
+
+test:  $(OBJS) $(OBJDIR)/test.o
+	"$(TARGET)-ld" $^ -T src/myscript.ld -o kernel
+.PHONY: test
+
+$(OBJDIR)/%.o: %.c
+	"$(TARGET)-gcc" $(CFLAGS) -c $< -o $@ 
+
+$(OBJDIR)/a.o: src/a.s
+	"$(TARGET)-gcc" $(CFLAGS) src/a.s -c -nostdlib -o src/a.o
 
 objdump:
-	$(TARGET)-objdump -D kernel
+	"$(TARGET)-objdump" -D kernel
 
-qemu: all
+qemu: kernel
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel -s -S
 
-qemu2: all
-	clear
+qemu2: kernel
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel -smp 2
 
 gdb: all

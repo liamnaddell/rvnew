@@ -47,22 +47,36 @@ void set_mtvec(void *addr) {
 	return;
 }
 
+typedef struct exception_cause {
+	unsigned int code;
+	char interrupt;
+} exception_cause;
+
+exception_cause get_mcause() {
+	uint64_t mcause;
+	asm volatile("csrrs %0, mcause, x0" : "=r"(mcause) : :);
+	exception_cause ec;
+	ec.interrupt = mcause >> 63;
+	ec.code = mcause & ~(1LL << 62);
+	return ec;
+}
+
 void interrupt_handler() {
-	puts("exception handled");
+	puts("exception handled: ");
+	exception_cause ec = get_mcause();
+	printf("interrupt: %d, code: %d\n",ec.interrupt, ec.code);
+
 	while (1) {}
 }
 
 
 void kmain(void *a, void *dtb) {
-
 	int hartid = get_hartid();
 	if (hartid != 0) {
 		while (1) {}
 	}
-
 	puts(&hiasm);
-	char *str = "booting rvnew";
-	puts(str);
+
 
 	spec s = get_extensions();
 	printf("%s\n",s);
@@ -71,7 +85,7 @@ void kmain(void *a, void *dtb) {
 	set_mtvec(interrupt_handler);
 	printf("mtvec: %x",get_mtvec() >> 2);
 
-	asm volatile("lw t0, 0(x0)" : : :);
+	asm volatile("ecall" : : :);
 
 	/*
 	fdt_header *hdr = get_header(dtb);

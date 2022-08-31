@@ -18,7 +18,7 @@ typedef struct fdt_header {
 
 fdt_header *get_header(void *loc);
 void print_header(fdt_header *hdr);
-uint32_t print_structure(fdt_header *hdr);
+void print_structure(fdt_header *hdr);
 
 typedef struct nodes {
 	//current node, can be a child node

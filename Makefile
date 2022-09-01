@@ -39,5 +39,8 @@ test2: testkernel
 gdb: kernel
 	$(TARGET)-gdb -x gdb.gdb kernel
 
+testgdb: testkernel
+	$(TARGET)-gdb -x gdb.gdb $<
+
 clean:
 	-rm src/*.o kernel

@@ -7,12 +7,13 @@ CC := riscv64-elf-gcc
 
 OBJS := $(addprefix $(OBJDIR)/, a.o string.o dtb.o byte.o malloc.o printf.o)
 
-all:  $(OBJS) $(OBJDIR)/main.o
-	"$(TARGET)-ld" $^ -T src/myscript.ld -o kernel
+all: kernel
 
-test:  $(OBJS) $(OBJDIR)/test.o
-	"$(TARGET)-ld" $^ -T src/myscript.ld -o kernel
-.PHONY: test
+kernel:  $(OBJS) $(OBJDIR)/main.o
+	"$(TARGET)-ld" $^ -T src/myscript.ld -o $@ 
+
+testkernel:  $(OBJS) $(OBJDIR)/test.o
+	"$(TARGET)-ld" $^ -T src/myscript.ld -o $@
 
 $(OBJDIR)/%.o: %.c
 	"$(TARGET)-gcc" $(CFLAGS) -c $< -o $@ 
@@ -28,6 +29,12 @@ qemu: kernel
 
 qemu2: kernel
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel #-smp 2
+
+test: testkernel
+	qemu-system-riscv64 -m 32M -nographic -machine virt -bios $< -s -S
+
+test2: testkernel
+	qemu-system-riscv64 -m 32M -nographic -machine virt -bios $< #-smp 2
 
 gdb: kernel
 	$(TARGET)-gdb -x gdb.gdb kernel

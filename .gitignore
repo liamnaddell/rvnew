@@ -3,3 +3,4 @@ main.o
 a.out
 kernel
 src/*.o
+testkernel

@@ -61,10 +61,21 @@ exception_cause get_mcause() {
 	return ec;
 }
 
+void *read_mepc() {
+	void *mepc;
+	asm volatile("csrrs %0, mepc, x0" : "=r"(mepc) : :);
+	//ALIGNMENT BUG: this line is required to make sure that interrupt_handler() is aligned properly
+	asm volatile("nop" : : :);
+	return mepc;
+}
+
+//shouldn't be a C function, should be an asm function
 void interrupt_handler() {
 	puts("exception handled: ");
 	exception_cause ec = get_mcause();
-	printf("interrupt: %d, code: %d\n",ec.interrupt, ec.code);
+	void *pc;
+	pc = read_mepc();
+	printf("(pc: %p), interrupt: %d, code: %d\n",pc,ec.interrupt, ec.code);
 
 	while (1) {}
 }

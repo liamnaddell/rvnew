@@ -14,7 +14,8 @@ typedef struct spec {
 spec get_extensions() {
 	spec s;
 	char *letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	uint64_t reg = csrread(0x301);
+	uint64_t reg; 
+	asm volatile("csrrs %0, misa, x0" : "=r"(reg) : :);
 	int i;
 	int j = 0;
 	int mask = 1;
@@ -64,13 +65,11 @@ exception_cause get_mcause() {
 void *read_mepc() {
 	void *mepc;
 	asm volatile("csrrs %0, mepc, x0" : "=r"(mepc) : :);
-	//ALIGNMENT BUG: this line is required to make sure that interrupt_handler() is aligned properly
-	asm volatile("nop" : : :);
 	return mepc;
 }
 
 //shouldn't be a C function, should be an asm function
-void interrupt_handler() {
+void m_mode_c_handler() {
 	puts("exception handled: ");
 	exception_cause ec = get_mcause();
 	void *pc;
@@ -80,6 +79,22 @@ void interrupt_handler() {
 	while (1) {}
 }
 
+void call_in_s_mode(void *fn) {
+	uint64_t top = 0x82000000;
+	asm volatile("csrrw %0, pmpaddr0, %0" : : "r"(top):);
+	//                   L  AARWX
+	uint64_t pmp0cfg = 0b10001111;
+	asm volatile ("csrrw %0, pmpcfg0, %0" : : "r"(pmp0cfg));
+	asm volatile("csrrw %0, sepc, %0" : : "r"(fn):);
+	asm volatile("sret" : : :);
+}
+
+void do_ecall() {
+	puts("Hi from S mode");
+	asm volatile("ecall" : : :);
+}
+
+extern void m_mode_handler();
 
 void kmain(void *a, void *dtb) {
 	int hartid = get_hartid();
@@ -93,16 +108,16 @@ void kmain(void *a, void *dtb) {
 	printf("%s\n",s);
 
 	
-	set_mtvec(interrupt_handler);
-	printf("mtvec: %x",get_mtvec() >> 2);
+	set_mtvec(m_mode_handler);
 
-	asm volatile("ecall" : : :);
+	call_in_s_mode(do_ecall);
 
-	/*
-	fdt_header *hdr = get_header(dtb);
 
-	print_header(hdr);
-	print_structure(hdr);*/
+
+	//fdt_header *hdr = get_header(dtb);
+
+	//print_header(hdr);
+	//print_structure(hdr);
 
 	/*mem_init(0x80000000,1);
 	char *buf = malloc(50);

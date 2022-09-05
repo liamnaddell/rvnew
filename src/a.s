@@ -3,11 +3,10 @@
 _start:
 	la sp,_stack_top
 	jal kmain
-.globl csrread
-csrread:
-	csrrs a0, misa, x0
-	ret
-
+.globl m_mode_handler
+.align 4
+m_mode_handler:
+	jal m_mode_c_handler
 
 .section .rodata
 .globl hiasm

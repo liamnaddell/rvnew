@@ -44,3 +44,7 @@ Questions: Does the 3-instruction fail go for assembly as well as c?
 https://devicetree-specification.readthedocs.io/en/latest/chapter5-flattened-format.html
 
 This struct is at addr in $a1 upon start
+
+VGA: I'm using a cirrus vga
+
+qemu source code: https://github.com/qemu/qemu/blob/master/hw/display/cirrus_vga.c

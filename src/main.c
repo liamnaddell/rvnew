@@ -3,6 +3,7 @@ extern char hiasm;
 #include "string.h"
 #include "dtb.h"
 #include "memory.h"
+#include "smain.h"
 
 typedef struct spec {
 	char extensions[26];
@@ -85,6 +86,9 @@ void m_mode_c_handler() {
 //switches the processor from M-mode to S-mode, which is has less privlige
 void call_in_s_mode(void *fn) {
 	disable_pmp();
+	//change spp field to 1 to switch to s-mode instead of u-mode
+	uint64_t eight = 1 << 8;
+	asm volatile("csrrs %0, mstatus,%0" : : "r"(eight):);
 	asm volatile("csrrw %0, sepc, %0" : : "r"(fn):);
 	asm volatile("sret" : : :);
 }
@@ -97,11 +101,6 @@ void disable_pmp() {
 	//                   L  AARWX
 	uint64_t pmp0cfg = 0b10001111;
 	asm volatile ("csrrw %0, pmpcfg0, %0" : : "r"(pmp0cfg));
-}
-
-void do_ecall() {
-	puts("Hi from S mode");
-	asm volatile("ecall" : : :);
 }
 
 //defined in a.s, calls m_mode_c_handler
@@ -130,7 +129,7 @@ void kmain(void *a, void *dtb) {
 	print_header(hdr);
 	print_structure(hdr);
 
-	call_in_s_mode(do_ecall);
+	call_in_s_mode(smain);
 
 	/*mem_init(0x80000000,1);
 	char *buf = malloc(50);

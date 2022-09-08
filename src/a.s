@@ -7,6 +7,10 @@ _start:
 .align 4
 m_mode_handler:
 	jal m_mode_c_handler
+.globl s_mode_handler
+.align 4
+s_mode_handler:
+	jal s_mode_c_handler
 
 .section .rodata
 .globl hiasm

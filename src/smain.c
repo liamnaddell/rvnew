@@ -21,8 +21,17 @@ void call_in_u_mode(void *fn) {
 	asm volatile("sret" : : :);
 }
 
+void set_stvec(void *addr) {
+	uint64_t stvec = (((uint64_t) addr) << 0) & ~(0b11) ;
+	asm volatile("csrrw %0, stvec, %0" : : "r"(stvec):);
+}
+
+extern void s_mode_handler();
+
 void smain() {
 	puts("Hi from S mode");
+
+	set_stvec(s_mode_handler);
 
 	call_in_u_mode(u_hi);
 

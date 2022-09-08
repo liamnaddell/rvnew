@@ -1,9 +1,9 @@
-TARGET := riscv64-none-elf
+TARGET := riscv64-elf
 CFLAGS := -Wno-builtin-declaration-mismatch -Wno-discarded-qualifiers -mcmodel=medany -ggdb -march='rv64gc' -nostdlib
 
 OBJDIR := src
 
-CC := riscv64-none-elf-gcc
+CC := riscv64-elf-gcc
 
 OBJS := $(addprefix $(OBJDIR)/, a.o string.o dtb.o byte.o malloc.o printf.o smain.o)
 

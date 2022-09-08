@@ -2,7 +2,8 @@
 #include <stdint-gcc.h>
 
 void s_mode_c_handler() {
-	puts("exception recieved in S mode");
+	puts("exception recieved in S mode, delegating back to m-mode");
+	asm volatile("ecall" : : :);
 	while (1) {}
 }
 

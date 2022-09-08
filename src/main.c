@@ -93,6 +93,15 @@ void call_in_s_mode(void *fn) {
 	asm volatile("sret" : : :);
 }
 
+void delegate_trap(int e_or_i, int number) {
+	number = 1 << number;
+	if (e_or_i) {
+		asm volatile("csrrs %0, medeleg, %0" : : "r"(number):);
+	} else {
+		asm volatile("csrrs %0, mideleg, %0" : : "r"(number):);
+	}
+}
+
 //for all 32 megabytes of memory, make it RWX in all processor modes, pmp= physical memory protection
 void disable_pmp() {
 	//32MB of memory starting at 0x80000000
@@ -129,6 +138,8 @@ void kmain(void *a, void *dtb) {
 	print_header(hdr);
 	print_structure(hdr);
 
+
+	delegate_trap(1,8);
 	call_in_s_mode(smain);
 
 	/*mem_init(0x80000000,1);

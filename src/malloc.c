@@ -14,7 +14,7 @@ unsigned int page_count;
 ll_head *start;
 
 //return where to insert the new region after
-ll_region *find_empty_space(unsigned int size, ll_region **before) {
+ll_region *find_empty_space(size_t size, ll_region **before) {
 	if (start->s == NULL) {
 		return (ll_region *) (((void *) start)+sizeof(ll_region));
 
@@ -35,7 +35,7 @@ ll_region *find_empty_space(unsigned int size, ll_region **before) {
 }
 
 
-void *malloc(long unsigned int bytes) {
+void *malloc(size_t bytes) {
 	ll_region *before = NULL;
 	ll_region *r = find_empty_space(bytes, &before);
 	r->size = bytes;

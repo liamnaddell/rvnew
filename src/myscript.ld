@@ -1,7 +1,7 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x80000000;
+	. = 0x80000000;
 	.text : { *(.text) }
 	PROVIDE(_text_end = .);
 	. = _text_end + 0x1000;

@@ -115,14 +115,14 @@ void disable_pmp() {
 //defined in a.s, calls m_mode_c_handler
 extern void m_mode_handler();
 
+extern void _fw_end();
+
 //called from a.s after setting up the stack pointer in sp
 void kmain(void *a, void *dtb) {
 	int hartid = get_hartid();
 	if (hartid != 0) {
 		while (1) {}
 	}
-	puts(&hiasm);
-
 
 	spec s = get_extensions();
 	printf("%s\n",s);
@@ -134,15 +134,29 @@ void kmain(void *a, void *dtb) {
 
 
 	fdt_header *hdr = get_header(dtb);
+	mem_init(_fw_end,1);
 
-	print_header(hdr);
-	print_structure(hdr);
+	//print_header(hdr);
+	//print_structure(hdr);
+
+	puts("Which demo to run? (0 = priv example, <other> = multithreading example):");
+
+	char ch = getch();
+	putchar(10);
+	if (ch == '0') {
+		delegate_trap(1,8);
+		call_in_s_mode(smain);
+	} else {
+		for (int i = 0; i < 100; i++) {
+			char *b = malloc(i);
+			memset(b,0xff,i);
+			free(b);
+		}
+	}
+	while (1) {}
 
 
-	delegate_trap(1,8);
-	call_in_s_mode(smain);
-
-	/*mem_init(0x80000000,1);
+	/*
 	char *buf = malloc(50);
 	for (;;) {
 		getn(buf,50);

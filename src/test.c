@@ -25,14 +25,22 @@ int strcmp_basic3() {
 	return res != 0;
 }
 
+void m_mode_c_handler() {
+	while (1){}
+}
+
 void kmain(void *a, void *dtb) {
+
+	int l;
+	aquire_lock(&l);
+
 	puts("TEST SUITE");
 	testfn tests[3] = {
 		strcmp_basic,
 		strcmp_basic2,
 		strcmp_basic3
 	};
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 1; i++) {
 		int res = tests[i]();
 		if (res == 1) {
 			printf("TEST %d PASSED\n", i);
@@ -40,5 +48,6 @@ void kmain(void *a, void *dtb) {
 			printf("TEST %d FAILED\n", i);
 		}
 	}
+	release_lock(&l);
 	while (1) {}
 }

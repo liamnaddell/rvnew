@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 int strnlen(char *s, int maxsize) {
 	int i=0;
 	while (!(s[i] == '\0' || i == maxsize)) {
@@ -97,4 +99,10 @@ void *memcpy(char *dest, char *src, long unsigned int n) {
 		src++;
 	}
 	return dest;
+}
+
+void memset(char *dest, char c, size_t bytes) {
+	for (int i = 0; i < bytes; i++) {
+		*dest=c;
+	}
 }

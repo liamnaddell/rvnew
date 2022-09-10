@@ -28,7 +28,7 @@ qemu: kernel
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel -s -S
 
 qemu2: kernel
-	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel #-smp 2
+	qemu-system-riscv64 -m 32M -nographic -machine virt -bios kernel -smp 2
 
 test: testkernel
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios $< -s -S

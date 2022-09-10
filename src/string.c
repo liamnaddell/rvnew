@@ -15,24 +15,24 @@ int strlen(char *s) {
 }
 
 int putchar(char c) {
-		char *addr = (char *) 0x10000000;
-		*addr = c;
-		return 0;
+	char *addr = (char *) 0x10000000;
+	*addr = c;
+	return 0;
 }
 
 char getch() {
-		char *addr = (char *) 0x10000000;
-		for (;;) {
-			if ((addr[5] & 1) != 0) {
-				char c = *addr;
-				//echo character
-				if (c == '\r') {
-					c = '\n';
-				}
-				putchar(c);
-				return c;
+	char *addr = (char *) 0x10000000;
+	for (;;) {
+		if ((addr[5] & 1) != 0) {
+			char c = *addr;
+			//echo character
+			if (c == '\r') {
+				c = '\n';
 			}
+			putchar(c);
+			return c;
 		}
+	}
 }
 
 void getn(char *buf, int n) {

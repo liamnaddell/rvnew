@@ -4,6 +4,7 @@ extern char hiasm;
 #include "dtb.h"
 #include "memory.h"
 #include "traps.h"
+#include "lock.h"
 
 typedef int (*testfn)();
 
@@ -26,12 +27,13 @@ int strcmp_basic3() {
 	return res != 0;
 }
 
-int l = 0;
+lock l = LOCK_INIT;
 
 void kmain(void *a, void *dtb) {
 
 	setup_m_handlers();
 
+	//disable multicore support for now
 	aquire_lock(&l);
 
 	puts("TEST SUITE");
@@ -48,6 +50,7 @@ void kmain(void *a, void *dtb) {
 			printf("TEST %d FAILED\n", i);
 		}
 	}
-	release_lock(&l);
+	//don't run test suite again
+	//release_lock(&l);
 	while (1) {}
 }

@@ -5,7 +5,7 @@ OBJDIR := src
 
 CC := riscv64-elf-gcc
 
-OBJS := $(addprefix $(OBJDIR)/, a.o string.o dtb.o byte.o malloc.o printf.o smain.o traps.o exceptions.o)
+OBJS := $(addprefix $(OBJDIR)/, a.o string.o dtb.o byte.o malloc.o printf.o smain.o traps.o exceptions.o lock.o)
 
 all: kernel
 
@@ -34,7 +34,7 @@ test: testkernel
 	qemu-system-riscv64 -m 32M -nographic -machine virt -bios $< -s -S -smp 2
 
 test2: testkernel
-	qemu-system-riscv64 -m 32M -nographic -machine virt -bios $< #-smp 2
+	qemu-system-riscv64 -m 32M -nographic -machine virt -bios $< -smp 2
 
 gdb: kernel
 	$(TARGET)-gdb -x gdb.gdb kernel

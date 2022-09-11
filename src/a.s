@@ -20,7 +20,7 @@ m_mode_handler:
 .align 4
 s_mode_handler:
 	jal s_mode_c_handler
-.globl aquire_lock
+/*.globl aquire_lock
 aquire_lock:
 	li t0,1
 
@@ -32,7 +32,7 @@ aquire_lock:
 .globl release_lock
 release_lock:
 	amoswap.w.rl x0,x0,0(a0)
-	ret
+	ret*/
 	
 
 #.section .rodata

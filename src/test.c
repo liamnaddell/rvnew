@@ -3,6 +3,7 @@ extern char hiasm;
 #include "string.h"
 #include "dtb.h"
 #include "memory.h"
+#include "traps.h"
 
 typedef int (*testfn)();
 
@@ -25,13 +26,12 @@ int strcmp_basic3() {
 	return res != 0;
 }
 
-void m_mode_c_handler() {
-	while (1){}
-}
+int l = 0;
 
 void kmain(void *a, void *dtb) {
 
-	int l;
+	setup_m_handlers();
+
 	aquire_lock(&l);
 
 	puts("TEST SUITE");
@@ -40,7 +40,7 @@ void kmain(void *a, void *dtb) {
 		strcmp_basic2,
 		strcmp_basic3
 	};
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 3; i++) {
 		int res = tests[i]();
 		if (res == 1) {
 			printf("TEST %d PASSED\n", i);

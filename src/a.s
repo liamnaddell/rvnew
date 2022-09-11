@@ -1,8 +1,17 @@
 .section .text
 .globl _start
 _start:
-	la sp,_stack_top
-	jal kmain
+	#code is broken, SMP totally wrecks my code
+	csrr a0, mhartid
+	beq a0, x0, core0
+	core1:
+		la sp,_stack2_top
+		j jmain
+	core0:
+		la sp,_stack1_top
+		j jmain
+	jmain:
+		jal kmain
 .globl m_mode_handler
 .align 4
 m_mode_handler:
@@ -13,23 +22,12 @@ s_mode_handler:
 	jal s_mode_c_handler
 .globl aquire_lock
 aquire_lock:
-	addi sp,sp,-8
-	sw ra,4(sp)
-	sw fp,0(sp)
-	move fp,sp
-
-	li t1,1
+	li t0,1
 
 	try_aquire:
-		amoswap.w.aq t0,t1,0(a0)
+		amoswap.w.aq t0,t0,0(a0)
 		bnez t0,try_aquire
-
-	move sp,fp
-	sw fp,0(sp)
-	sw ra,4(sp)
-	addi sp,sp,8
-
-	ret
+	jr ra
 	
 .globl release_lock
 release_lock:

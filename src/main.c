@@ -42,46 +42,9 @@ uint64_t get_mtvec() {
 	return mtvec;
 }
 
-//what function do we call on a trap
-void set_mtvec(void *addr) {
-	uint64_t mtvec = (((uint64_t) addr) << 0) & ~(0b11) ;
-	asm volatile("csrrw %0, mtvec, %0" : : "r"(mtvec):);
-	return;
-}
 
-typedef struct exception_cause {
-	//exception code
-	unsigned int code;
-	//interrupt or error/exception
-	char interrupt;
-} exception_cause;
 
-//why an exception was caused
-exception_cause get_mcause() {
-	uint64_t mcause;
-	asm volatile("csrrs %0, mcause, x0" : "=r"(mcause) : :);
-	exception_cause ec;
-	ec.interrupt = mcause >> 63;
-	ec.code = mcause & ~(1LL << 63);
-	return ec;
-}
 
-void *read_mepc() {
-	void *mepc;
-	asm volatile("csrrs %0, mepc, x0" : "=r"(mepc) : :);
-	return mepc;
-}
-
-//shouldn't be a C function, should be an asm function
-void m_mode_c_handler() {
-	puts("exception handled: ");
-	exception_cause ec = get_mcause();
-	void *pc;
-	pc = read_mepc();
-	printf("(pc: %p), interrupt: %d, code: %d\n",pc,ec.interrupt, ec.code);
-
-	while (1) {}
-}
 
 //switches the processor from M-mode to S-mode, which is has less privlige
 void call_in_s_mode(void *fn) {
@@ -112,8 +75,6 @@ void disable_pmp() {
 	asm volatile ("csrrw %0, pmpcfg0, %0" : : "r"(pmp0cfg));
 }
 
-//defined in a.s, calls m_mode_c_handler
-extern void m_mode_handler();
 
 extern void _fw_end();
 
@@ -128,7 +89,7 @@ void kmain(void *a, void *dtb) {
 	printf("%s\n",s);
 
 	
-	set_mtvec(m_mode_handler);
+	setup_m_handlers();
 
 
 

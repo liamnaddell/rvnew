@@ -2,6 +2,7 @@ extern char hiasm;
 
 #include "string.h"
 #include "dtb.h"
+#include <stddef.h>
 #include "memory.h"
 #include "smain.h"
 
@@ -79,8 +80,8 @@ void disable_pmp() {
 extern void _fw_end();
 
 //called from a.s after setting up the stack pointer in sp
-void kmain(void *a, void *dtb) {
-	int hartid = get_hartid();
+void kmain(size_t hartid, void *dtb) {
+	//int hartid = get_hartid();
 	if (hartid != 0) {
 		while (1) {}
 	}
@@ -108,11 +109,6 @@ void kmain(void *a, void *dtb) {
 		delegate_trap(1,8);
 		call_in_s_mode(smain);
 	} else {
-		for (int i = 0; i < 100; i++) {
-			char *b = malloc(i);
-			memset(b,0xff,i);
-			free(b);
-		}
 	}
 	while (1) {}
 

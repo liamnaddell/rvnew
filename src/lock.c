@@ -7,7 +7,5 @@ void aquire_lock(lock *l) {
 }
 
 void release_lock(lock *l) {
-
 	asm volatile("amoswap.w.rl x0,x0,0(a0)" : : "r"(l) : );
-
 }

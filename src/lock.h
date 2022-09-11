@@ -1,6 +1,6 @@
 #pragma once
 
-void aquire_lock(int *lock);
-void release_lock(int *lock);
 typedef int lock;
+void aquire_lock(lock *lock);
+void release_lock(lock *lock);
 #define LOCK_INIT 0

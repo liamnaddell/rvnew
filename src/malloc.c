@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include "lock.h"
 
 typedef struct ll_region {
 	struct ll_region *next;
@@ -7,6 +8,7 @@ typedef struct ll_region {
 } ll_region;
 
 typedef struct ll_head {
+	lock l;
 	ll_region *s;
 } ll_head;
 
@@ -36,6 +38,7 @@ ll_region *find_empty_space(size_t size, ll_region **before) {
 
 
 void *malloc(size_t bytes) {
+	aquire_lock(&start->l);
 	ll_region *before = NULL;
 	ll_region *r = find_empty_space(bytes, &before);
 	r->size = bytes;
@@ -49,9 +52,11 @@ void *malloc(size_t bytes) {
 		r->next = NULL;
 		r->prev = NULL;
 	}
+	release_lock(&start->l);
 	return ((void *) r) + sizeof(ll_region);
 }
 void free(void *addr) {
+	aquire_lock(&start->l);
 	ll_region *r = addr - sizeof(ll_region);
 	if (r->prev == NULL) {
 		//bug here, can mark entire memory as used 
@@ -62,9 +67,11 @@ void free(void *addr) {
 		r->prev->next = r->next;
 		r->next->prev = r->prev;
 	}
+	release_lock(&start->l);
 }
 
 void mem_init(void *base_addr, unsigned int pageno) {
 	start = base_addr;
 	start->s = NULL;
+	start->l = LOCK_INIT;
 }

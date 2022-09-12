@@ -23,7 +23,7 @@ ll_region *find_empty_space(size_t size, ll_region **before) {
 	}
 	ll_region *head = start->s;
 	while(head->next != NULL) {
-		unsigned int d = (head->next) - (sizeof(ll_region) + head->size + head);
+		int d = ((void *) head->next) - (sizeof(ll_region) + ((size_t)head->size) + ((size_t)head));
 		if (d > size) {
 			*before = head;
 			return (ll_region *) (((void *) head)+sizeof(ll_region)+head->size);
@@ -48,9 +48,13 @@ void *malloc(size_t bytes) {
 		if (before->next != NULL) {
 			before->next->prev = r;
 		}
+		before->next = r;
 	} else {
 		r->next = NULL;
 		r->prev = NULL;
+	}
+	if (start->s == NULL) {
+		start->s = r;
 	}
 	release_lock(&start->l);
 	return ((void *) r) + sizeof(ll_region);
@@ -59,7 +63,7 @@ void free(void *addr) {
 	aquire_lock(&start->l);
 	ll_region *r = addr - sizeof(ll_region);
 	if (r->prev == NULL) {
-		//bug here, can mark entire memory as used 
+		//bug here, can mark entire memory as used, fixed by malloc(0) in mem_init
 		start->s = r->next;
 	} else if (r->next == NULL) {
 		r->prev->next = NULL;
@@ -74,4 +78,6 @@ void mem_init(void *base_addr, unsigned int pageno) {
 	start = base_addr;
 	start->s = NULL;
 	start->l = LOCK_INIT;
+	//that way start->s never changes, 0x18 bytes are lost :'(
+	malloc(0);
 }

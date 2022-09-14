@@ -38,7 +38,6 @@ ll_region *find_empty_space(size_t size, ll_region **before) {
 
 
 void *malloc(size_t bytes) {
-	while (start->initialized == 0) {}
 	//wait fr initializatin
 	aquire_lock(&start->l);
 	ll_region *before = NULL;
@@ -69,7 +68,7 @@ void free(void *addr) {
 		start->s = r->next;
 	} else if (r->next == NULL) {
 		r->prev->next = NULL;
-	} else if (r->next == 0x1) {
+	} else if (r->next  > 0x90000000 || r->next < 0x70000000) {
 		puts("buffer overrun");
 		while (1) {}
 	} else {

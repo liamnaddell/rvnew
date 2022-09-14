@@ -71,8 +71,7 @@ int malloc_basic3() {
 
 int malloc_stress(char ch) {
 	int i = 0;
-	while (1) {
-		//thread 1
+	for (int g = 0; g < 100000; g++) {
 		char *b = malloc(i);
 		memset(b,ch,i);
 		for (int j = 0; j < i; j++) {
@@ -86,7 +85,6 @@ int malloc_stress(char ch) {
 			i = 0;
 		}
 		i++;
-		//thread 2
 		free(b);
 	}
 }

@@ -2,6 +2,8 @@
 #include "lock.h"
 
 typedef struct ll_region {
+	//there's an off-by-one bug in find_empty_space, this fixes it by just adding a padding byte. 
+	char padding;
 	struct ll_region *next;
 	struct ll_region *prev;
 	long unsigned int size;
@@ -23,9 +25,10 @@ ll_region *find_empty_space(size_t size, ll_region **before) {
 	}
 	ll_region *head = start->s;
 	while(head->next != NULL) {
-		int d = ((void *) head->next) - (sizeof(ll_region) + ((size_t)head->size) + ((size_t)head));
-		if (d > size) {
-			puts("d");
+		//theres an off-by-one bug in here somewhere
+		long int d = ((long int) head->next) - (sizeof(ll_region) + ((long int)head->size) + ((long int)head));
+		if (d > size+1 && d > (int) sizeof(ll_region)) {
+			printf("d:%d",d);
 			*before = head;
 			return (ll_region *) (((void *) head)+sizeof(ll_region)+(size_t) head->size);
 
@@ -70,7 +73,7 @@ void free(void *addr) {
 	} else if (r->next == NULL) {
 		r->prev->next = NULL;
 	} else if (r->next  > 0x90000000 || r->next < 0x70000000) {
-		puts("buffer overrun");
+		printf("buffer overrun: \n\tr->next: %p, \n\tr->prev: %p, \n\tstart->s->next:%p,\n\tr:%p\n", r->next,r->prev,start->s->next,r);
 		while (1) {}
 	} else {
 		r->prev->next = r->next;

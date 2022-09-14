@@ -8,6 +8,8 @@ extern char hiasm;
 #include <stddef.h>
 
 typedef int (*testfn)();
+//add malloc test:
+//create a region to trigger the d-bug so I can remove the "cheeky hack"
 
 int strcmp_basic() {
 	char *s1 = "Hello World!";

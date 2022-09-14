@@ -25,8 +25,9 @@ ll_region *find_empty_space(size_t size, ll_region **before) {
 	while(head->next != NULL) {
 		int d = ((void *) head->next) - (sizeof(ll_region) + ((size_t)head->size) + ((size_t)head));
 		if (d > size) {
+			puts("d");
 			*before = head;
-			return (ll_region *) (((void *) head)+sizeof(ll_region)+head->size);
+			return (ll_region *) (((void *) head)+sizeof(ll_region)+(size_t) head->size);
 
 		}
 		head = head->next;

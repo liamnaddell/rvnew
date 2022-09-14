@@ -38,6 +38,8 @@ ll_region *find_empty_space(size_t size, ll_region **before) {
 
 
 void *malloc(size_t bytes) {
+	while (start->initialized == 0) {}
+	//wait fr initializatin
 	aquire_lock(&start->l);
 	ll_region *before = NULL;
 	ll_region *r = find_empty_space(bytes, &before);
@@ -67,8 +69,13 @@ void free(void *addr) {
 		start->s = r->next;
 	} else if (r->next == NULL) {
 		r->prev->next = NULL;
+	} else if (r->next == 0x1) {
+		puts("buffer overrun");
+		while (1) {}
 	} else {
 		r->prev->next = r->next;
+		//the line that chrashes
+		printf("0x%p\n",r->next);
 		r->next->prev = r->prev;
 	}
 	release_lock(&start->l);

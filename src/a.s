@@ -1,7 +1,6 @@
 .section .text
 .globl _start
 _start:
-	#code is broken, SMP totally wrecks my code
 	csrr a0, mhartid
 	beq a0, x0, core0
 	core1:

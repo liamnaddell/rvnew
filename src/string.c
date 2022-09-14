@@ -103,6 +103,7 @@ void *memcpy(char *dest, char *src, long unsigned int n) {
 
 void memset(char *dest, char c, size_t bytes) {
 	for (int i = 0; i < bytes; i++) {
-		*dest=c;
+		dest[i] = c;
+		//*dest=c;
 	}
 }

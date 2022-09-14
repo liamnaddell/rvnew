@@ -47,9 +47,32 @@ int malloc_basic2() {
 	}
 	return 0;
 }
+int malloc_basic3() {
+	char *a = malloc(1);
+	memset(a,1,1);
+	free(a);
+	char *b = malloc(2);
+	memset(b,1,2);
+	for (int i = 0; i < 2; i++) {
+		if (b[i] != 1) {
+			return 0;
+		}
+	}
+	free(b);
+	char *c = malloc(3);
+	memset(c,1,3);
+	for (int i = 0; i < 3; i++) {
+		if (c[i] != 1) {
+			return 0;
+		}
+	}
+	return 1;
+}
 
 int malloc_stress(char ch) {
-	for (int i = 1; i < 1000; i++) {
+	int i = 0;
+	while (1) {
+		//thread 1
 		char *b = malloc(i);
 		memset(b,ch,i);
 		for (int j = 0; j < i; j++) {
@@ -58,6 +81,12 @@ int malloc_stress(char ch) {
 				return;
 			}
 		}
+		//printf("%d\n", i);
+		if (i > 15) {
+			i = 0;
+		}
+		i++;
+		//thread 2
 		free(b);
 	}
 }
@@ -70,6 +99,11 @@ void kmain(size_t hartid, void *dtb) {
 	setup_m_handlers();
 	if (hartid == 0) {
 		mem_init(_fw_end,10);
+	} else {
+		int i = 0;
+		while (i < 10000) {
+			i++;
+		}
 	}
 
 	//multicore test
@@ -88,6 +122,12 @@ void kmain(size_t hartid, void *dtb) {
 	}
 
 	res = malloc_basic2();
+	i++;
+	if (res == 0) {
+		goto fail;
+	}
+
+	res = malloc_basic3();
 	i++;
 	if (res == 0) {
 		goto fail;

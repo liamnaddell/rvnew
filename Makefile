@@ -5,7 +5,7 @@ OBJDIR := src
 
 CC := riscv64-elf-gcc
 
-OBJS := $(addprefix $(OBJDIR)/, a.o string.o dtb.o byte.o malloc.o printf.o smain.o traps.o exceptions.o lock.o)
+OBJS := $(addprefix $(OBJDIR)/, a.o string.o dtb.o byte.o malloc.o printf.o smain.o traps.o exceptions.o lock.o matmul.o)
 
 all: kernel
 

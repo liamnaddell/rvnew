@@ -5,6 +5,8 @@ extern char hiasm;
 #include <stddef.h>
 #include "memory.h"
 #include "smain.h"
+#include "lock.h"
+#include "matmul.h"
 
 typedef struct spec {
 	char extensions[26];
@@ -44,9 +46,6 @@ uint64_t get_mtvec() {
 }
 
 
-
-
-
 //switches the processor from M-mode to S-mode, which is has less privlige
 void call_in_s_mode(void *fn) {
 	disable_pmp();
@@ -78,22 +77,21 @@ void disable_pmp() {
 
 
 extern void _fw_end();
+lock l = LOCK_INIT;
+void jmp_addr();
 
 //called from a.s after setting up the stack pointer in sp
 void kmain(size_t hartid, void *dtb) {
 	//int hartid = get_hartid();
 	if (hartid != 0) {
-		while (1) {}
+		wait_until_set(&l);
+		jmp_addr();
 	}
 
 	spec s = get_extensions();
 	printf("%s\n",s);
 
-	
 	setup_m_handlers();
-
-
-
 
 	fdt_header *hdr = get_header(dtb);
 	mem_init(_fw_end,1);
@@ -109,6 +107,10 @@ void kmain(size_t hartid, void *dtb) {
 		delegate_trap(1,8);
 		call_in_s_mode(smain);
 	} else {
+		//jmp_addr = do_matmul;
+		setup_matmul();
+		set_lock(&l);
+		do_matmul();
 	}
 	while (1) {}
 

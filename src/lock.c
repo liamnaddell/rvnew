@@ -10,7 +10,7 @@ void release_lock(lock *l) {
 	asm volatile("amoswap.w.rl x0,x0,0(a0)" : : "r"(l) : );
 }
 
-void wait_for(lock *lock) {
+void wait_until(lock *lock) {
 	while (*lock != 1) {}
 }
 

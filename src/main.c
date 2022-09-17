@@ -78,13 +78,13 @@ void disable_pmp() {
 
 extern void _fw_end();
 lock l = LOCK_INIT;
-void jmp_addr();
+void (*jmp_addr)();
 
 //called from a.s after setting up the stack pointer in sp
 void kmain(size_t hartid, void *dtb) {
 	//int hartid = get_hartid();
 	if (hartid != 0) {
-		wait_until_set(&l);
+		wait_until(&l);
 		jmp_addr();
 	}
 
@@ -107,7 +107,7 @@ void kmain(size_t hartid, void *dtb) {
 		delegate_trap(1,8);
 		call_in_s_mode(smain);
 	} else {
-		//jmp_addr = do_matmul;
+		jmp_addr = do_matmul;
 		setup_matmul();
 		set_lock(&l);
 		do_matmul();
